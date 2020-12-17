@@ -51,5 +51,8 @@ class AppReview(TopicModeller):
 
         super().__init__(df_pd)
 
-    def plot_embeddings(self, num_topics=None, port_num=9000):
-        super().plot(self.app_name, port_num=port_num, topics=num_topics)
+    def cluster_embeddings(self, num_topics=None):
+        super().project(topics=num_topics)
+
+    def plot_embeddings(self, port_num=9000):
+        super().plot(self.app_name, port_num=port_num)

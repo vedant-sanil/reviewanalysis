@@ -2,6 +2,7 @@ import re
 import nltk 
 import plotly
 import spacy
+from flask import request
 import dash
 import dash_core_components as dcc 
 import dash_html_components as html 
@@ -18,6 +19,7 @@ class TopicModeller():
         sents = ''
         nlp = spacy.load('en_core_web_sm')
         embedder = SentenceTransformer('bert-base-nli-stsb-mean-tokens')
+        self.tsne_df1 = pd.DataFrame()
 
         for idx, sent in enumerate(sentence_df['sentence']):
             sent = sent.strip()
@@ -55,7 +57,7 @@ class TopicModeller():
                 kmeans = KMeans(n_clusters = i, init = 'k-means++', max_iter = 300, n_init = 10, random_state = 0)
                 kmeans.fit(x)
                 wcss.append(kmeans.inertia_)
-            n_clusters = wcss[5]
+            n_clusters = 5
         else:
             n_clusters = topics
 
@@ -75,6 +77,9 @@ class TopicModeller():
         '''
             Uses dash to interactively plot topic clusters.
         '''
+        if self.tsne_df1.empty:
+            raise NotImplementedError('t-SNE embeddings have not been computed. Use the cluster_embeddings method to compute t-SNE embeddings and cluster them.')
+
         just_domain = app_name
         fig = go.Figure(data=go.Scatter(x=self.tsne_df1[0],
                                         y=self.tsne_df1[1],
@@ -99,9 +104,24 @@ class TopicModeller():
 
         app = dash.Dash()
         app.layout = html.Div([
+                        dcc.Location(id='url', refresh=False),
                         dcc.Graph(figure=fig)])
 
         app.run_server(debug=True,
                        host="127.0.0.1", 
                        port=port_num)
         
+        def shutdown():
+            func = request.environ.get('werkzeug.server.shutdown')
+            if func is None:
+                raise RuntimeError('Not running with Werkzeug server')
+            func()
+
+        @app.callback(dash.dependencies.Output('page-content', 'children'),
+                    [dash.dependencies.Input('url', 'pathname')])
+        def display_page(pathname):
+            if pathname == '/shutdown':
+                shutdown()
+            return html.Div([
+                html.H3('You are on page {}'.format(pathname))
+            ])
