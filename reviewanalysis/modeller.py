@@ -2,8 +2,10 @@ import re
 import nltk 
 import plotly
 import spacy
+import dash
+import dash_core_components as dcc 
+import dash_html_components as html 
 import plotly.graph_objects as go
-from goose3 import Goose 
 import pandas as pd 
 from nltk.tokenize import sent_tokenize
 from sklearn.manifold import TSNE
@@ -36,7 +38,7 @@ class TopicModeller():
 
         self.corpus_embeddings = embedder.encode(dfs)
 
-    def plot(self, topics=None, init='random', perplexity=100):
+    def plot(self, app_name, port_num=9000, topics=None, init='random', perplexity=100):
         tsne = TSNE(n_components=2, init=init, random_state=10, perplexity=perplexity)
         tsne_df = tsne.fit_transform(self.corpus_embeddings)
         print('reducing embeddings dimensions')
@@ -64,6 +66,34 @@ class TopicModeller():
         dfs=pd.DataFrame(dfs)
         dfs=dfs.rename(columns={0:'text'})
         tsne_df1=tsne_df1.join(dfs)
-        just_domain = 'test'
+        just_domain = app_name
+
+        fig = go.Figure(data=go.Scatter(x=tsne_df1[0],
+                                        y=tsne_df1[1],
+                                        textfont=dict(
+                                        family="sans serif",
+                                        size=8),
+                                        text=tsne_df1['text'],
+                                        hovertemplate=
+                                        "<b>Topic: %{marker.color}</b><br><br>" +
+                                        "Text: %{text}<br>" +
+                                        "<extra></extra>",
+                                        marker=dict(
+                                        color=tsne_df1['label'],   
+                                        colorbar=dict(
+                                        title="Topics"),
+                                        colorscale="Viridis"),
+                                        mode='markers'))
+
+        fig.update_traces(textposition='top center')
+        fig.update_layout(title='A')
+        fig.update_layout(showlegend=False)
+
+        app = dash.Dash()
+        app.layout = html.Div([
+                        dcc.Graph(figure=fig)])
+
+        app.run_server(debug=True, use_reloader=True,
+                        port=port_num)
 
         
