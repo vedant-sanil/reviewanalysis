@@ -36,9 +36,14 @@ class TopicModeller():
         dfs=[re.sub('• ', '', i) for i in dfs]
         dfs=[ i for i in df1 if len(i) >= min_char_len ]
 
+        self.dfs = dfs
         self.corpus_embeddings = embedder.encode(dfs)
 
-    def plot(self, app_name, port_num=9000, topics=None, init='random', perplexity=100):
+    def project(self, topics=None, init='random', perplexity=100):
+        '''
+            Generate t-SNE embeddings and cluster using 
+            k-Means.
+        '''
         tsne = TSNE(n_components=2, init=init, random_state=10, perplexity=perplexity)
         tsne_df = tsne.fit_transform(self.corpus_embeddings)
         print('reducing embeddings dimensions')
@@ -54,7 +59,6 @@ class TopicModeller():
         else:
             n_clusters = topics
 
-
         #Applying kmeans to the dataset / Creating the kmeans classifier
         kmeans = KMeans(n_clusters = int(n_clusters), init = 'k-means++', max_iter = 300, n_init = 10, random_state = 0)
         y_kmeans = kmeans.fit_predict(x)
@@ -63,37 +67,41 @@ class TopicModeller():
         # Append words to list
         tsne_df1=pd.DataFrame(tsne_df)
         tsne_df1=tsne_df1.join(y_kmeans1)
-        dfs=pd.DataFrame(dfs)
+        dfs=pd.DataFrame(self.dfs)
         dfs=dfs.rename(columns={0:'text'})
-        tsne_df1=tsne_df1.join(dfs)
-        just_domain = app_name
+        self.tsne_df1=tsne_df1.join(dfs)
 
-        fig = go.Figure(data=go.Scatter(x=tsne_df1[0],
-                                        y=tsne_df1[1],
+    def plot(self, app_name, port_num=9000):
+        '''
+            Uses dash to interactively plot topic clusters.
+        '''
+        just_domain = app_name
+        fig = go.Figure(data=go.Scatter(x=self.tsne_df1[0],
+                                        y=self.tsne_df1[1],
                                         textfont=dict(
                                         family="sans serif",
                                         size=8),
-                                        text=tsne_df1['text'],
+                                        text=self.tsne_df1['text'],
                                         hovertemplate=
                                         "<b>Topic: %{marker.color}</b><br><br>" +
                                         "Text: %{text}<br>" +
                                         "<extra></extra>",
                                         marker=dict(
-                                        color=tsne_df1['label'],   
+                                        color=self.tsne_df1['label'],   
                                         colorbar=dict(
                                         title="Topics"),
                                         colorscale="Viridis"),
                                         mode='markers'))
 
         fig.update_traces(textposition='top center')
-        fig.update_layout(title='A')
+        fig.update_layout(title='App Review for: {}'.format(app_name))
         fig.update_layout(showlegend=False)
 
         app = dash.Dash()
         app.layout = html.Div([
                         dcc.Graph(figure=fig)])
 
-        app.run_server(debug=True, use_reloader=True,
-                        port=port_num)
-
+        app.run_server(debug=True,
+                       host="127.0.0.1", 
+                       port=port_num)
         

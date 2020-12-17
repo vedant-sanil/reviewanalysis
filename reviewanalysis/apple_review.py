@@ -36,7 +36,7 @@ class AppReview(TopicModeller):
 
         self.review_df = pd.DataFrame(data=review_dict)
 
-        return review_df        
+        return self.review_df        
 
     def generate_embeddings(self):
         '''
@@ -49,7 +49,7 @@ class AppReview(TopicModeller):
 
         df_pd = pd.DataFrame(data=df_dict)
 
-        super.__init__(df_pd)
+        super().__init__(df_pd)
 
-    def plot_embeddings(self, num_topics=None):
-        
+    def plot_embeddings(self, num_topics=None, port_num=9000):
+        super().plot(self.app_name, port_num=port_num, topics=num_topics)
