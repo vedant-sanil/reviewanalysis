@@ -38,4 +38,32 @@ class TopicModeller():
 
     def plot(self, topics=None, init='random', perplexity=100):
         tsne = TSNE(n_components=2, init=init, random_state=10, perplexity=perplexity)
+        tsne_df = tsne.fit_transform(self.corpus_embeddings)
+        print('reducing embeddings dimensions')
+        print('==============================')
+        x = tsne_df
+        wcss = []
+        if not topics:
+            for i in range(1, 11):
+                kmeans = KMeans(n_clusters = i, init = 'k-means++', max_iter = 300, n_init = 10, random_state = 0)
+                kmeans.fit(x)
+                wcss.append(kmeans.inertia_)
+            n_clusters = wcss[5]
+        else:
+            n_clusters = topics
+
+
+        #Applying kmeans to the dataset / Creating the kmeans classifier
+        kmeans = KMeans(n_clusters = int(n_clusters), init = 'k-means++', max_iter = 300, n_init = 10, random_state = 0)
+        y_kmeans = kmeans.fit_predict(x)
+        y_kmeans1=pd.DataFrame(y_kmeans)
+        y_kmeans1=y_kmeans1.rename(columns={0:"label"})
+        # Append words to list
+        tsne_df1=pd.DataFrame(tsne_df)
+        tsne_df1=tsne_df1.join(y_kmeans1)
+        dfs=pd.DataFrame(dfs)
+        dfs=dfs.rename(columns={0:'text'})
+        tsne_df1=tsne_df1.join(dfs)
+        just_domain = 'test'
+
         
