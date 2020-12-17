@@ -16,7 +16,7 @@ class TopicModeller():
         sents = ''
         nlp = spacy.load('en_core_web_sm')
         embedder = SentenceTransformer('bert-base-nli-stsb-mean-tokens')
-        
+
         for idx, sent in enumerate(sentence_df['sentence']):
             sent = sent.strip()
             if sent[-1] != '.':
@@ -35,3 +35,7 @@ class TopicModeller():
         dfs=[ i for i in df1 if len(i) >= min_char_len ]
 
         self.corpus_embeddings = embedder.encode(dfs)
+
+    def plot(self, topics=None, init='random', perplexity=100):
+        tsne = TSNE(n_components=2, init=init, random_state=10, perplexity=perplexity)
+        

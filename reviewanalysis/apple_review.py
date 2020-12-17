@@ -41,6 +41,8 @@ class AppReview(TopicModeller):
     def generate_embeddings(self):
         '''
             Generates embeddings based on 
+            reviews from app store
+        '''
         df_dict = {'sentence': []}
         for idx, c in enumerate(self.review_df.review):
             df_dict['sentence'].append(c)
@@ -49,4 +51,5 @@ class AppReview(TopicModeller):
 
         super.__init__(df_pd)
 
-    def plot_embeddings(num_topics=None):
+    def plot_embeddings(self, num_topics=None):
+        
