@@ -1,2 +1,3 @@
 import os
-from setuptool 
+from setuptool import setup, find_packages
+
