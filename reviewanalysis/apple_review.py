@@ -3,12 +3,15 @@ import pandas as pd
 from datetime import datetime
 from app_store_scraper import AppStore 
 from reviewanalysis.modeller import TopicModeller
+from reviewanalysis.utils.csvtools import generate_csv
 
 class AppReview(TopicModeller):
     def __init__(self, country, app_name):
         self.country = country
         self.app_name = app_name
         self.review_unit = AppStore(country=country, app_name=app_name)
+
+        self.topic_reviews = pd.DataFrame()
 
     def get_reviews(self, num_reviews=None):
         '''
@@ -52,7 +55,11 @@ class AppReview(TopicModeller):
         super().__init__(df_pd)
 
     def cluster_embeddings(self, num_topics=None):
-        super().project(topics=num_topics)
+        self.num_topics = num_topics
+        self.topic_reviews = super().project(topics=num_topics)
 
     def plot_embeddings(self, port_num=9000):
         super().plot(self.app_name, port_num=port_num)
+
+    def generate_topic_csv(self, csv_path):
+        generate_csv(self.topic_reviews, csv_path, self.num_topics)

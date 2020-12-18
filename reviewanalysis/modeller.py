@@ -73,6 +73,8 @@ class TopicModeller():
         dfs=dfs.rename(columns={0:'text'})
         self.tsne_df1=tsne_df1.join(dfs)
 
+        return self.tsne_df1
+
     def plot(self, app_name, port_num=9000):
         '''
             Uses dash to interactively plot topic clusters.
@@ -105,7 +107,14 @@ class TopicModeller():
         app = dash.Dash()
         app.layout = html.Div([
                         dcc.Location(id='url', refresh=False),
-                        dcc.Graph(figure=fig)])
+                        dcc.Link('Navigate to "/"', href='/'),
+                        html.Br(),
+                        dcc.Link('Navigate to "/shutdown"', href='/shutdown'),
+
+                        # content will be rendered in this element
+                        html.Div(id='page-content')
+                        #dcc.Graph(figure=fig)
+                        ])
 
         app.run_server(debug=True,
                        host="127.0.0.1", 
@@ -120,7 +129,8 @@ class TopicModeller():
         @app.callback(dash.dependencies.Output('page-content', 'children'),
                     [dash.dependencies.Input('url', 'pathname')])
         def display_page(pathname):
-            if pathname == '/shutdown':
+            print(pathname)
+            if '/shutdown' in pathname:
                 shutdown()
             return html.Div([
                 html.H3('You are on page {}'.format(pathname))
