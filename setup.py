@@ -23,7 +23,7 @@ setup(
     name=NAME,
     version=VERSION,
     description='A python package for providing detailed analysis of apps and products from Amazon, Apple',
-    long_description=read('readme.md'),
+    long_description=read('README.md'),
     author='Vedant Sanil',
     author_email='vedantsanil@gmail.com',
     license='GNU LGPL 3',
