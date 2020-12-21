@@ -39,14 +39,17 @@ def run_dash_server(go_fig, port_num=9000, topic_df=pd.DataFrame(), topics=None)
                         html.Br(),
                         html.Div(id='page-content'),
                         #dcc.Link('Generate Topic CSV', href='/generate'),
-                        html.Button(id='generate-csv', type='submit', children='Submit'),
+                        html.Button(id='generate-csv', type='submit', children='Generate CSV'),
                         html.Div(id='output-div-3'),
                         dcc.Graph(figure=go_fig)
                         ])
 
+    global topic_reviews
+    global num_topics
     topic_reviews = topic_df
     num_topics = topics
 
+    #print(topic_reviews)
     app.run_server(debug=True,
                     host="127.0.0.1", 
                     port=port_num)
@@ -59,9 +62,9 @@ def shutdown():
 
 def generate():
     if not os.path.exists(dir_name):
-        print(file_path)
-        print("Path does not exist!")
+        print("Path does not exist! : {}".format(dir_name))
         shutdown()
+
     generate_csv(topic_reviews, file_path, num_topics)
 
 @app.callback(Output('output-div-1', 'children'),
@@ -69,6 +72,7 @@ def generate():
                State('save_dir', 'value')])
 def update_output(clicks, input_value):
     if clicks is not None:
+        global dir_name
         dir_name = input_value
         if not os.path.exists(dir_name):
             print("Path does not exist!")
@@ -80,12 +84,13 @@ def update_output(clicks, input_value):
                State('csv_name', 'value')])
 def update_second_output(clicks, input_value):
     if clicks is not None:
+        global file_path
         file_path = os.path.join(dir_name, input_value)
         print(file_path)
 
 @app.callback(Output('output-div-3', 'children'),
               [Input('generate-csv', 'n_clicks')])
-def generate_csv(clicks):
+def generate_link_csv(clicks):
     if clicks is not None:
         generate()
 
