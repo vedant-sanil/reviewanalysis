@@ -1,5 +1,6 @@
 import pandas as pd
 from reviewanalysis.apple_review import AppReview
+from reviewanalysis.amazon_review import ProductReview
 
 if __name__=="__main__":
     ap = AppReview("us", "kardia")

@@ -68,6 +68,7 @@ class TopicModeller():
         tsne_df1=tsne_df1.join(y_kmeans1)
         dfs=pd.DataFrame(self.dfs)
         dfs=dfs.rename(columns={0:'text'})
+        self.num_topics = topics
         self.tsne_df1=tsne_df1.join(dfs)
 
         return self.tsne_df1
@@ -101,4 +102,4 @@ class TopicModeller():
         fig.update_layout(title='App Review for: {}'.format(app_name))
         fig.update_layout(showlegend=False)
 
-        run_dash_server(fig, port_num)
+        run_dash_server(fig, port_num, self.tsne_df1, self.num_topics)
