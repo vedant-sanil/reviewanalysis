@@ -40,6 +40,7 @@ setup(
     author='Vedant Sanil',
     author_email='vedantsanil@gmail.com',
     license='GNU LGPL 3',
+    setup_requires = parse_requirements('requirements.txt'),
     install_requires = parse_requirements('requirements.txt'),
     python_requires='>3.6',
     cmdclass={
