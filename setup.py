@@ -1,4 +1,4 @@
-import os
+import os, sys, subprocess
 from setuptools import setup, find_packages
 from setuptools.command.install import install 
 
@@ -20,11 +20,20 @@ def parse_requirements(filename):
 
     return ls
 
+def pip_install(package_name):
+    subprocess.call(
+        [sys.executable, "-m", 'pip', 'install', package_name]
+    )
+
 class PostInstallCommand(install):
     """Post-installation for installation mode."""
     def run(self):
         install.run(self)
 
+        # Install all required pip packages
+        for p in parse_requirements('requirements.txt'):
+            pip_install(p)
+        
         # Downloads requisite packages after downloading 
         os.system("python -m spacy download en_core_web_sm")
         import nltk
