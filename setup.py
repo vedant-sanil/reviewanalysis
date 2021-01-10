@@ -1,5 +1,6 @@
 import os
 from setuptools import setup, find_packages
+from setuptools.command.install import install 
 
 from reviewanalysis import __VERSION__
 
@@ -19,6 +20,18 @@ def parse_requirements(filename):
 
     return ls
 
+class PostInstallCommand(install):
+    """Post-installation for installation mode."""
+    def run(self):
+        install.run(self)
+
+        # Downloads requisite packages after downloading 
+        os.system("python -m spacy download en_core_web_sm")
+        import nltk
+        nltk.download('punkt')
+        from sentence_transformers import SentenceTransformer
+        embedder = SentenceTransformer('bert-base-nli-stsb-mean-tokens')
+
 setup(
     name=NAME,
     version=VERSION,
@@ -29,6 +42,9 @@ setup(
     license='GNU LGPL 3',
     install_requires = parse_requirements('requirements.txt'),
     python_requires='>3.6',
+    cmdclass={
+        'install':PostInstallCommand,
+    },
     packages=find_packages(),
     url='https://github.com/vedant-sanil/reviewanalysis',
     classifiers=[
