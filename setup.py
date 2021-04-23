@@ -2,9 +2,9 @@ import os, sys, subprocess
 from setuptools import setup, find_packages
 from setuptools.command.install import install 
 
-from reviewanalysis import __VERSION__
+from wholehog import __VERSION__
 
-NAME = 'reviewanalysis'
+NAME = 'wholehog'
 VERSION = __VERSION__
 
 def read(filename):
@@ -35,10 +35,14 @@ class PostInstallCommand(install):
             pip_install(p)
         
         # Downloads requisite packages after downloading 
+        build_dir = os.path.join(os.getcwd(), "models")
         os.system("python -m spacy download en_core_web_sm")
         import nltk
-        nltk.download('punkt')
+        nltk.download('punkt', download_dir=build_dir)
         from sentence_transformers import SentenceTransformer
+        os.environ['SENTENCE_TRANSFORMERS_HOME'] = build_dir
+        cache_folder = os.getenv('SENTENCE_TRANSFORMERS_HOME')
+        print(cache_folder)
         embedder = SentenceTransformer('bert-base-nli-stsb-mean-tokens')
 
 setup(
@@ -54,7 +58,7 @@ setup(
         'install':PostInstallCommand,
     },
     packages=find_packages(),
-    url='https://github.com/vedant-sanil/reviewanalysis',
+    url='https://github.com/vedant-sanil/wholehog',
     classifiers=[
         "Operating System :: OS Independent",
         "Intended Audience :: Science/Research",

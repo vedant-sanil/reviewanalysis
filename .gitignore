@@ -1,4 +1,10 @@
 __pycache__
 test.py
 *egg*
-build/
+
+# Keep the folder
+build/*
+!build/.gitkeep
+
+models/*
+!models/.gitkeep

@@ -1,6 +1,6 @@
-# Reviewanalysis
+# WholeHog
 
-Reviewanalysis is a python library for performing text analyis on product reviews from Amazon, app reviews from Apple store, etc.
+WholeHog is a python library for performing text analyis on product reviews from Amazon, app reviews from Apple store, etc. It is built around an interface provided through Dash and Plotly with interactive plots. 
 
 ## Installation
 
@@ -17,7 +17,7 @@ This section covers Amazon and Apple reviews separately.
 ### Apple App Store Reviews
 
 ```python
-from reviewanalysis.apple_review import AppReview
+from wholehog.apple_review import AppReview
 
 ap = AppReview("us", "kardia")
 df = ap.get_reviews(num_reviews=20)
