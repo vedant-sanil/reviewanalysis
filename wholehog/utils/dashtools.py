@@ -3,7 +3,7 @@ import dash
 import plotly
 import pandas as pd
 from subprocess import call
-from reviewanalysis.utils.csvtools import generate_csv
+from wholehog.utils.csvtools import generate_csv
 from flask import request
 import plotly.graph_objects as go
 import dash_core_components as dcc 

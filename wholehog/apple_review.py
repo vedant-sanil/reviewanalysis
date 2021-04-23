@@ -2,8 +2,8 @@ import pandas as pd
 
 from datetime import datetime
 from app_store_scraper import AppStore 
-from reviewanalysis.modeller import TopicModeller
-from reviewanalysis.utils.csvtools import generate_csv
+from wholehog.modeller import TopicModeller
+from wholehog.utils.csvtools import generate_csv
 
 class AppReview(TopicModeller):
     def __init__(self, country, app_name):

@@ -42,7 +42,6 @@ class PostInstallCommand(install):
         from sentence_transformers import SentenceTransformer
         os.environ['SENTENCE_TRANSFORMERS_HOME'] = build_dir
         cache_folder = os.getenv('SENTENCE_TRANSFORMERS_HOME')
-        print(cache_folder)
         embedder = SentenceTransformer('bert-base-nli-stsb-mean-tokens')
 
 setup(

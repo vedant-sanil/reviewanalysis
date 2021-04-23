@@ -1,3 +1,4 @@
+import os
 import re
 import nltk 
 import plotly
@@ -9,13 +10,16 @@ from sklearn.manifold import TSNE
 from sklearn.cluster import KMeans 
 from spacy.lang.en.stop_words import STOP_WORDS
 from sentence_transformers import SentenceTransformer
-from reviewanalysis.utils.dashtools import run_dash_server
-from reviewanalysis.utils.csvtools import generate_csv
+from wholehog.utils.dashtools import run_dash_server
+from wholehog.utils.csvtools import generate_csv
 
 class TopicModeller():
     def __init__(self, sentence_df, min_char_len=50):
         sents = ''
         nlp = spacy.load('en_core_web_sm')
+        build_dir = os.path.join(os.getcwd(), "models")
+        os.environ['SENTENCE_TRANSFORMERS_HOME'] = build_dir
+        cache_folder = os.getenv('SENTENCE_TRANSFORMERS_HOME')
         embedder = SentenceTransformer('bert-base-nli-stsb-mean-tokens')
         self.tsne_df1 = pd.DataFrame()
 
@@ -26,6 +30,7 @@ class TopicModeller():
             sents += sent
             sents += ' '
 
+        nltk.data.path += [os.path.join(os.getcwd(), "models")]
         dfs = sent_tokenize(sents)
         df1 = dfs
         df_len = ', '.join(df1)
